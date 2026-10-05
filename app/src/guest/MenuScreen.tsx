@@ -48,8 +48,9 @@ export function MenuScreen({ data, lang, setLang, status, onItem, onInfo }: Prop
   const go = (id: string) => {
     const el = scroller.current, tabs = tabsRef.current;
     if (!el || !tabs) return;
-    const top = id === 'all' ? tabs.offsetTop : (secs.current[id]?.offsetTop ?? 0) - tabs.offsetHeight;
-    el.scrollTo({ top: Math.max(0, top) + 1, behavior: 'smooth' });
+    // «Барлығы» goes all the way back to the café header; a category lands just under the sticky tabs.
+    const top = id === 'all' ? 0 : Math.max(0, (secs.current[id]?.offsetTop ?? 0) - tabs.offsetHeight) + 1;
+    el.scrollTo({ top, behavior: 'smooth' });
     setActive(id);
   };
 
