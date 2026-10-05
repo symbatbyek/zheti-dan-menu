@@ -1,0 +1,26 @@
+<!-- @dsCard group="Components" viewport="700x900" name="Menu" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px 24px}.lbl{font:500 12px/1.3 var(--font-sans);color:var(--text-muted);margin:0 0 8px}.r{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.s{margin-bottom:18px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.QRMenuDesignSystem_af1ea9;
+const { Button,IconButton,Icon,Tag,StatusPill,CafeLogo,Price,CategoryTabs,LangSwitcher,LangTabs,AppBar,BottomNav,ItemCard,PhotoPlaceholder,Skeleton,BottomSheet,TextField,Select,Switch,CodeInput,MenuRow,Fab,Dialog,ColorPicker,Banner,EmptyState,Toast,SectionHeader,ListGroup,SettingRow,CafeHeader,HoursTable } = NS;
+
+function Demo(){return (<div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,alignItems:'start',marginBottom:20}}>
+<div><p className="lbl">CafeHeader</p><div style={{borderRadius:16,overflow:'hidden',background:'var(--surface-page)',border:'1px solid var(--border-subtle)'}}><CafeHeader name="Жеті Дән" cover="../../assets/photos/plov.jpg" statusLabel="Ашық" hours="08:00–23:00" onInfo={()=>{}} trailing={<LangSwitcher value="kz"/>}/></div></div>
+<div><p className="lbl">HoursTable</p><div style={{background:'var(--surface-card)',borderRadius:16,padding:'4px 16px',boxShadow:'var(--shadow-card)'}}><HoursTable today={4} days={['Дс','Сс','Ср','Бс','Жм','Сн','Жс'].map((l,i)=>({label:l,from:i===6?'09:00':'08:00',to:i===6?'22:00':'23:00',todayLabel:'бүгін'}))}/></div></div></div>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,alignItems:'start'}}>
+<div style={{display:'flex',flexDirection:'column',gap:12}}><p className="lbl" style={{margin:0}}>ItemCard · row / sold out / text-only / loading</p>
+<ItemCard name="Плов" description="Рис, говядина, морковь, нут, зира" price={2900} photo="../../assets/photos/plov.jpg" tags={[{kind:'popular',label:'Популярное'}]}/>
+<ItemCard name="Лагман" description="Тянутая лапша, говядина, овощи" price={2700} photo="../../assets/photos/lagman.webp" soldOut/>
+<ItemCard name="Чай с молоком" description="Чёрный чай, молоко, по-казахски" price={800} tags={[{kind:'veg',label:'Вегетарианское'}]}/>
+<div className="qm-item" style={{cursor:'default'}}><div className="qm-item__body" style={{gap:8}}><Skeleton width="70%" height={18}/><Skeleton width="95%" height={12}/><Skeleton width="40%" height={16} style={{marginTop:10}}/></div><Skeleton width={104} height={104} radius="var(--radius-md)"/></div></div>
+<div style={{display:'flex',flexDirection:'column',gap:12}}><p className="lbl" style={{margin:0}}>ItemCard · feature · ZH</p>
+<ItemCard layout="feature" photo="../../assets/photos/shurpa.jpg" name="Шурпа" description="Бульон из баранины, картофель, перец, зелень" price={2400} tags={[{kind:'new',label:'Новинка'}]}/>
+<ItemCard lang="zh" name="凯撒沙拉" description="罗马生菜、烤鸡、帕玛森奶酪" price={2600} placeholder/></div>
+</div></div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

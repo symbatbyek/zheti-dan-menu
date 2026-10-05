@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Guest page (blank)" description="Empty 375px guest menu page: café header with language switcher, sticky category tabs, empty content area" -->
+<helmet><script src="./ds-base.js"></script><style>body{margin:0;background:var(--paper-200,#ece7e0)}</style></helmet>
+<div style="min-height:100vh;display:flex;justify-content:center;padding:24px 0">
+<div data-accent="terracotta" lang="kk" data-screen-label="Guest blank" style="position:relative;width:375px;min-height:812px;background:var(--surface-page);border-radius:36px;overflow:hidden;box-shadow:0 0 0 8px var(--ink-900),0 24px 60px rgba(0,0,0,.25);display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:12px;padding:16px 16px 14px">
+<x-import component-from-global-scope="QRMenuDesignSystem_af1ea9.CafeLogo" name="Жеті Дән" size="{{ 52 }}" hint-size="52px,52px"></x-import>
+<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0">
+<div style="font:700 22px/1.2 var(--font-sans);color:var(--text-primary)">Жеті Дән</div>
+<x-import component-from-global-scope="QRMenuDesignSystem_af1ea9.StatusPill" label="Ашық" hours="08:00–23:00" hint-size="160px,18px"></x-import>
+</div>
+<x-import component-from-global-scope="QRMenuDesignSystem_af1ea9.LangSwitcher" value="kz" hint-size="72px,44px"></x-import>
+</div>
+<x-import component-from-global-scope="QRMenuDesignSystem_af1ea9.CategoryTabs" value="all" items="{{ cats }}" hint-size="100%,48px"></x-import>
+<div style="flex:1;padding:20px 16px 40px"></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { cats: [{ id: 'all', label: 'Барлығы' }, { id: 'drinks', label: 'Сусындар' }, { id: 'main', label: 'Негізгі тағамдар' }, { id: 'salads', label: 'Салаттар' }, { id: 'desserts', label: 'Десерттер' }] };
+  }
+}
+</script>
+</body>
+</html>

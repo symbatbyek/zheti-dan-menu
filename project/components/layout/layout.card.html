@@ -1,0 +1,23 @@
+<!-- @dsCard group="Components" viewport="700x380" name="Layout" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px 24px}.lbl{font:500 12px/1.3 var(--font-sans);color:var(--text-muted);margin:0 0 8px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Button,IconButton,Icon,Tag,StatusPill,CafeLogo,Price,CategoryTabs,LangSwitcher,LangTabs,AppBar,BottomNav,ItemCard,PhotoPlaceholder,Skeleton,BottomSheet,TextField,Select,Switch,CodeInput,MenuRow,Fab,Dialog,ColorPicker,Banner,EmptyState,Toast,SectionHeader,ListGroup,SettingRow,CafeHeader,HoursTable } = window.QRMenuDesignSystem_af1ea9;
+
+function Demo(){const [a,setA]=React.useState(true);return (<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,alignItems:'start',background:'var(--surface-page)'}}>
+<div><SectionHeader count={3}>Негізгі тағамдар</SectionHeader>
+<ListGroup><MenuRow name="Палау" price={2900} photo="../../assets/photos/plov.jpg"/><MenuRow name="Бешбармақ" price={4500} photo="../../assets/photos/beshbarmak.jpeg"/></ListGroup>
+<div style={{marginTop:16}}><SectionHeader variant="title">Сусындар</SectionHeader></div></div>
+<div><SectionHeader>Баптаулар</SectionHeader>
+<ListGroup inset>
+<SettingRow title="Қолжетімді" subtitle="Тағамға тапсырыс беруге болады" control={<Switch checked={a} onChange={setA} ariaLabel="Қолжетімді"/>}/>
+<SettingRow icon="clock" title="Жұмыс уақыты" subtitle="08:00–23:00" onClick={()=>{}}/>
+<SettingRow icon="palette" title="Акцент түсі" subtitle="Терракота" onClick={()=>{}}/>
+</ListGroup></div>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

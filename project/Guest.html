@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#faf8f5"><title>Жеті Дән · Мәзір</title><link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds_bundle.js"></script>
+<script>window.QM_BASE = './'; window.QM_GUEST_URL = 'Guest.html';</script>
+<script src="ui_kits/guest-menu/data.js"></script>
+<script src="ui_kits/guest-menu/store.js"></script>
+<style>html,body{height:100%}body{margin:0;background:var(--surface-page);overscroll-behavior:none}.phone{position:relative;width:100%;max-width:560px;height:100vh;height:100dvh;margin:0 auto;background:var(--surface-page);overflow:hidden;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}@media (min-width:561px){body{background:var(--paper-100)}.phone{box-shadow:0 0 0 1px var(--border-subtle)}}</style></head><body><div id="root"></div>
+<script type="text/babel" src="ui_kits/guest-menu/MenuScreen.jsx"></script>
+<script type="text/babel" src="ui_kits/guest-menu/ItemSheet.jsx"></script>
+<script type="text/babel" src="ui_kits/guest-menu/CafeInfoScreen.jsx"></script>
+<script type="text/babel">
+function GuestApp() {
+  const [lang, setLangS] = React.useState(() => localStorage.getItem('qm-guest-lang-kz') || 'kz');
+  const setLang = l => { setLangS(l); localStorage.setItem('qm-guest-lang-kz', l); };
+  const [screen, setScreen] = React.useState('menu');
+  const [item, setItem] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const h = new Date().getHours(); const closed = h < 8 || h >= 23;
+  React.useEffect(() => { const t = setTimeout(() => setLoading(false), 600); return () => clearTimeout(t); }, []);
+  return (
+    <div className="phone" data-qm-root="" data-accent={localStorage.getItem('qm-accent') || 'terracotta'} data-screen-label="Guest">
+      {loading ? <MenuSkeleton /> : screen === 'info'
+        ? <CafeInfoScreen lang={lang} closed={closed} onBack={() => setScreen('menu')} />
+        : <MenuScreen key={lang} lang={lang} setLang={setLang} closed={closed} onItem={setItem} onInfo={() => setScreen('info')} />}
+      <ItemSheet item={item} lang={lang} onClose={() => setItem(null)} />
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<GuestApp />);
+</script></body></html>

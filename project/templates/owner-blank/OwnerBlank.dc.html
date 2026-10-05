@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Owner page (blank)" description="Empty 375px owner admin page: page title, empty content area, bottom navigation" -->
+<helmet><script src="./ds-base.js"></script><style>body{margin:0;background:var(--paper-200,#ece7e0)}</style></helmet>
+<div style="min-height:100vh;display:flex;justify-content:center;padding:24px 0">
+<div data-accent="terracotta" lang="kk" data-screen-label="Owner blank" style="position:relative;width:375px;height:812px;background:var(--surface-page);border-radius:36px;overflow:hidden;box-shadow:0 0 0 8px var(--ink-900),0 24px 60px rgba(0,0,0,.25);display:flex;flex-direction:column">
+<div style="padding:16px"><h1 style="margin:0;font:700 28px/1.2 var(--font-sans);color:var(--text-primary)">Бет атауы</h1></div>
+<div style="flex:1;overflow-y:auto;padding:0 16px 24px"></div>
+<x-import component-from-global-scope="QRMenuDesignSystem_af1ea9.BottomNav" value="menu" items="{{ nav }}" hint-size="100%,64px"></x-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { nav: [{ id: 'menu', label: 'Мәзір', icon: 'utensils' }, { id: 'cats', label: 'Санаттар', icon: 'layout-list' }, { id: 'qr', label: 'QR-кодтар', icon: 'qr-code' }, { id: 'profile', label: 'Кафе', icon: 'store' }] };
+  }
+}
+</script>
+</body>
+</html>

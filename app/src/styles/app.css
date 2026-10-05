@@ -1,0 +1,5 @@
+/* App shell: full-screen on phones, centred 560px column on desktop. */
+html,body,#root{height:100%}
+body{margin:0;background:var(--surface-page);overscroll-behavior:none}
+.phone{position:relative;width:100%;max-width:560px;height:100vh;height:100dvh;margin:0 auto;background:var(--surface-page);overflow:hidden;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+@media (min-width:561px){body{background:var(--paper-100)}.phone{box-shadow:0 0 0 1px var(--border-subtle)}}

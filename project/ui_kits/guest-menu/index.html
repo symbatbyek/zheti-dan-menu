@@ -1,0 +1,47 @@
+<!-- @dsCard group="Guest menu" viewport="560x900" name="Guest menu" subtitle="Interactive QR menu: tabs, item sheet, café info, states, 4 languages" -->
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guest menu · QR Menu</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script src="data.js"></script>
+<style>
+body{background:var(--paper-200);min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:14px;padding:16px}
+.kit-bar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:520px}
+.kit-bar button{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--border-strong);background:var(--surface-card);font:500 13px var(--font-sans);color:var(--text-secondary);cursor:pointer}
+.kit-bar button[aria-pressed="true"]{background:var(--ink-900);border-color:var(--ink-900);color:var(--paper-50)}
+.kit-phone{position:relative;width:375px;height:812px;border-radius:36px;overflow:hidden;background:var(--surface-page);box-shadow:0 0 0 8px var(--ink-900),0 24px 60px oklch(21% .012 60/.3);flex:none}
+</style></head>
+<body><div id="root"></div>
+<script type="text/babel" src="MenuScreen.jsx"></script>
+<script type="text/babel" src="ItemSheet.jsx"></script>
+<script type="text/babel" src="CafeInfoScreen.jsx"></script>
+<script type="text/babel">
+function GuestApp() {
+  const [lang, setLangS] = React.useState(() => localStorage.getItem('qm-guest-lang-kz') || 'kz');
+  const setLang = l => { setLangS(l); localStorage.setItem('qm-guest-lang-kz', l); };
+  const [state, setState] = React.useState('menu');
+  const [accent, setAccent] = React.useState('terracotta');
+  const [screen, setScreen] = React.useState('menu');
+  const [item, setItem] = React.useState(null);
+  const Bar = ({ opts, val, set }) => <div className="kit-bar">{opts.map(([v, l]) => <button key={v} aria-pressed={v === val} onClick={() => set(v)}>{l}</button>)}</div>;
+  return (
+    <>
+      <Bar val={lang} set={setLang} opts={[['kz', 'KZ'], ['ru', 'RU'], ['en', 'EN'], ['zh', 'ZH']]} />
+      <Bar val={state} set={s => { setState(s); setScreen('menu'); }} opts={[['menu', 'Menu'], ['loading', 'Loading'], ['closed', 'Closed'], ['empty', 'Empty category']]} />
+      <Bar val={accent} set={setAccent} opts={[['terracotta', 'Terracotta'], ['steppe', 'Steppe'], ['plum', 'Plum'], ['charcoal', 'Charcoal']]} />
+      <div className="kit-phone" data-qm-root="" data-accent={accent}>
+        {state === 'loading' ? <MenuSkeleton /> : screen === 'info'
+          ? <CafeInfoScreen lang={lang} closed={state === 'closed'} onBack={() => setScreen('menu')} />
+          : <MenuScreen key={lang} lang={lang} setLang={setLang} closed={state === 'closed'} emptyCat={state === 'empty'} onItem={setItem} onInfo={() => setScreen('info')} />}
+        <ItemSheet item={item} lang={lang} onClose={() => setItem(null)} />
+      </div>
+    </>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<GuestApp />);
+</script>
+</body></html>

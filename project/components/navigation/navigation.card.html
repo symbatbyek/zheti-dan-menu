@@ -1,0 +1,22 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Navigation" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px 24px}.lbl{font:500 12px/1.3 var(--font-sans);color:var(--text-muted);margin:0 0 8px}.r{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.s{margin-bottom:18px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.QRMenuDesignSystem_af1ea9;
+const { Button,IconButton,Icon,Tag,StatusPill,CafeLogo,Price,CategoryTabs,LangSwitcher,LangTabs,AppBar,BottomNav,ItemCard,PhotoPlaceholder,Skeleton,BottomSheet,TextField,Select,Switch,CodeInput,MenuRow,Fab,Dialog,ColorPicker } = NS;
+
+function Demo(){const [c,setC]=React.useState('drinks');const [l,setL]=React.useState('ru');const [t,setT]=React.useState('kz');const [b,setB]=React.useState('menu');
+return (<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+<div><p className="lbl">CategoryTabs</p><div style={{border:'1px solid var(--border-subtle)',borderRadius:12,overflow:'hidden'}}><CategoryTabs value={c} onChange={setC} items={[{id:'all',label:'Все'},{id:'drinks',label:'Напитки'},{id:'main',label:'Основные блюда'},{id:'salads',label:'Салаты'},{id:'desserts',label:'Десерты'}]}/></div>
+<p className="lbl" style={{marginTop:16}}>AppBar</p><div style={{border:'1px solid var(--border-subtle)',borderRadius:12,overflow:'hidden'}}><AppBar title="Новое блюдо" onBack={()=>{}} actions={<IconButton icon="trash-2" label="Удалить" variant="danger"/>}/></div>
+<p className="lbl" style={{marginTop:16}}>BottomNav</p><div style={{border:'1px solid var(--border-subtle)',borderRadius:12,overflow:'hidden'}}><BottomNav value={b} onChange={setB} items={[{id:'menu',label:'Меню',icon:'utensils'},{id:'cats',label:'Категории',icon:'layout-list'},{id:'qr',label:'QR-коды',icon:'qr-code'},{id:'profile',label:'Кафе',icon:'store'}]}/></div></div>
+<div><p className="lbl">LangSwitcher (tap to open)</p><div style={{display:'flex',justifyContent:'flex-end',height:44}}><LangSwitcher value={l} onChange={setL}/></div>
+<p className="lbl" style={{marginTop:16}}>LangTabs with translation status</p><LangTabs value={t} onChange={setT} status={{ru:'filled',kz:'auto',en:'auto',zh:'empty'}}/>
+<p className="lbl" style={{marginTop:8}}>● owner-written &nbsp; ● auto-translated &nbsp; ○ empty</p></div>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>
