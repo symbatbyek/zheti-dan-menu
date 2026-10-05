@@ -11,26 +11,39 @@ Two mobile web pages built from the Claude Design handoff in `../project`:
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173 (guest) and /owner.html (owner)
-npm run build      # static site in dist/ — upload this folder to any static host
-npm run preview    # serve dist/ locally
+npm run build && npm run dev:api   # app + backend on http://localhost:8788 (needs .dev.vars, see .dev.vars.example)
+npm run dev                        # UI with hot reload on :5173; /api is proxied to :8788
 ```
+
+## Backend (Cloudflare Pages Functions)
+
+`functions/api/*` runs on Cloudflare next to the site; shared code is in `server/`.
+
+| Endpoint | Who | What |
+|---|---|---|
+| `GET /api/menu` | public | the menu document (café, categories, dishes, accent) |
+| `PUT /api/menu` | owner | replace the menu document |
+| `POST /api/login` | public | `{ phone, pin }` → token (30 days); 5 wrong tries lock that IP for 15 min |
+| `POST /api/upload` | owner | store a photo, returns `api/img/<id>` |
+| `GET /api/img/:id` | public | serve a photo |
+
+Cloudflare settings (Pages project → Settings):
+- **Bindings:** KV namespace bound as `MENU`.
+- **Variables and Secrets:** `OWNER_PHONE`, `OWNER_PIN`, `SESSION_SECRET` (long random text). Set them as **Secret**.
 
 ## Where things are
 
-- `src/ds/` — the design-system components (Button, ItemCard, BottomSheet…) as typed React.
+- `src/ds/` — design-system components as typed React.
 - `src/styles/` — tokens and component CSS, copied unchanged from the design system.
-- `src/shared/seed.ts` — the starting menu, café details and opening hours.
-- `src/shared/store.ts` — saving and loading. **Swap this file for API calls when there is a backend.**
-- `src/shared/hours.ts` — open/closed status, calculated from the hours in Asia/Almaty time.
+- `src/shared/seed.ts` — the starting menu, shown until the owner saves for the first time.
+- `src/shared/api.ts` — calls to the backend; `src/shared/store.ts` — loading, caching, image helpers.
+- `src/shared/hours.ts` — open/closed status from the hours, in Asia/Almaty time.
 - `src/shared/translate.ts` — placeholder for AI translation.
-- `public/photos/` — dish photos.
+- `public/photos/` — starting dish photos.
 
-## Current limits (prototype shortcuts)
+## Known limits
 
-- **Data stays in one browser.** Owner edits are saved in `localStorage` and the Guest page in the
-  *same browser* sees them. Guests' phones won't see them until a backend stores the menu.
-- **No real login.** Any phone number and any 4-digit code opens the owner panel.
-- **Translation is a stand-in.** It knows a few category names; otherwise it copies the source text
-  and marks it "AI" for the owner to fix.
-- The QR code points at the Guest page next to `owner.html`, so print it from the final domain.
+- One owner account (phone + PIN from the Cloudflare settings). No SMS.
+- Guests may see changes up to ~1 minute later (Cloudflare KV caching).
+- Translation is a stand-in: a few category names, otherwise the source text marked "AI".
+- Replaced photos are not deleted from storage.

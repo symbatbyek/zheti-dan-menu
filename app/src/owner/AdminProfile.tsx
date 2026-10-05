@@ -1,5 +1,6 @@
 import { useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { AppBar, Button, CafeLogo, CategoryTabs, ColorPicker, Icon, ListGroup, Switch, TextField } from '../ds';
+import { uploadImage } from '../shared/api';
 import { asset, readImageFile } from '../shared/store';
 import type { Accent, Cafe, DayHours } from '../shared/types';
 
@@ -21,9 +22,9 @@ function Group({ title, note, children }: { title: string; note?: string; childr
   );
 }
 
-interface Props { cafe: Cafe; accent: Accent; setAccent: (a: Accent) => void; onPreview: () => void; onBack: () => void; onSave: (c: Cafe) => void }
+interface Props { cafe: Cafe; accent: Accent; setAccent: (a: Accent) => void; onPreview: () => void; onBack: () => void; onSave: (c: Cafe) => void; onError: (msg: string) => void }
 
-export function AdminProfile({ cafe, accent, setAccent, onPreview, onBack, onSave }: Props) {
+export function AdminProfile({ cafe, accent, setAccent, onPreview, onBack, onSave, onError }: Props) {
   const [days, setDays] = useState<DayHours[]>(cafe.hours);
   const [tab, setTab] = useState('drinks');
   const [cover, setCover] = useState(cafe.cover);
@@ -35,13 +36,17 @@ export function AdminProfile({ cafe, accent, setAccent, onPreview, onBack, onSav
   const setDay = (i: number, k: keyof DayHours, v: string | boolean) => setDays(days.map((x, j) => (j === i ? { ...x, [k]: v } : x)));
   const copyAll = () => setDays(days.map(() => ({ ...days[0] })));
   const badTime = days.some(d => d.on && !(validTime(d.from) && validTime(d.to)));
+  const [uploading, setUploading] = useState(false);
   const pick = (set: (v: string) => void, max: number) => async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; e.target.value = '';
-    if (file) set(await readImageFile(file, max));
+    if (!file) return;
+    setUploading(true);
+    try { set(await uploadImage(await readImageFile(file, max))); } catch { onError('Сурет жүктелмеді. Қайталап көріңіз'); }
+    finally { setUploading(false); }
   };
 
   const save = () => {
-    if (badTime || !f.name.trim()) return;
+    if (badTime || !f.name.trim() || uploading) return;
     // Address is typed once (Kazakh) and shown to every language; other languages keep their text if the Kazakh one didn't change.
     const address = f.address === cafe.address.kz ? cafe.address : { kz: f.address, ru: f.address, en: f.address, zh: f.address };
     const gis = f.gis.trim();
@@ -57,17 +62,17 @@ export function AdminProfile({ cafe, accent, setAccent, onPreview, onBack, onSav
   return (
     <div style={{ position: 'absolute', inset: 0, zIndex: 30, display: 'flex', flexDirection: 'column', background: 'var(--surface-page)' }}>
       <AppBar center title="Кафе профілі" onBack={onBack} style={{ background: 'var(--surface-card)', borderBottom: '1px solid var(--border-subtle)' }}
-        actions={<Button variant="ghost" disabled={badTime || !f.name.trim()} onClick={save} style={{ color: 'var(--accent-ink)' }}>Сақтау</Button>} />
+        actions={<Button variant="ghost" disabled={badTime || !f.name.trim() || uploading} onClick={save} style={{ color: 'var(--accent-ink)' }}>Сақтау</Button>} />
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 32px', display: 'flex', flexDirection: 'column', gap: 28 }}>
         <Group title="Безендіру">
           <div style={{ position: 'relative', height: 140, borderRadius: 'var(--radius-lg)', overflow: 'hidden', flexShrink: 0, background: 'var(--surface-sunken)' }}>
             {cover && <img src={asset(cover)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
-            <button onClick={() => coverRef.current?.click()} style={{ position: 'absolute', right: 10, bottom: 10, background: 'var(--surface-overlay)' }} className="qm-btn qm-btn--secondary"><Icon name="camera" size={18} />Мұқаба</button>
+            <button onClick={() => coverRef.current?.click()} style={{ position: 'absolute', right: 10, bottom: 10, background: 'var(--surface-overlay)' }} className="qm-btn qm-btn--secondary" disabled={uploading}><Icon name={uploading ? 'loader' : 'camera'} size={18} />Мұқаба</button>
             <input ref={coverRef} type="file" accept="image/*" hidden onChange={pick(setCover, 1600)} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <CafeLogo src={asset(logo)} name={f.name} size={64} />
-            <Button variant="secondary" icon="upload" onClick={() => logoRef.current?.click()}>Логотипті ауыстыру</Button>
+            <Button variant="secondary" icon={uploading ? 'loader' : 'upload'} disabled={uploading} onClick={() => logoRef.current?.click()}>Логотипті ауыстыру</Button>
             <input ref={logoRef} type="file" accept="image/*" hidden onChange={pick(setLogo, 256)} />
           </div>
           <TextField label="Кафе атауы" {...fld('name')} />

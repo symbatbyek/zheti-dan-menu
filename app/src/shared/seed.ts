@@ -3,6 +3,7 @@ import type { MenuData } from './types';
 const wk = { on: true, from: '08:00', to: '23:00' };
 
 export const SEED: MenuData = {
+  accent: 'terracotta',
   cafe: {
     name: 'Жеті Дән',
     cover: 'photos/plov.jpg',

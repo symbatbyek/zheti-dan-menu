@@ -1,5 +1,6 @@
 import { useRef, useState, type CSSProperties } from 'react';
 import { AppBar, Banner, Button, Dialog, Icon, LangTabs, ListGroup, Segmented, Select, SettingRow, Switch, Tag, TextField } from '../ds';
+import { uploadImage } from '../shared/api';
 import { asset, readImageFile } from '../shared/store';
 import { translateAsync } from '../shared/translate';
 import { LANGS, htmlLang, type Category, type Dish, type DishTag, type Lang, type TransStatus } from '../shared/types';
@@ -13,9 +14,9 @@ const rowInput: CSSProperties = { width: 110, border: 0, outline: 0, background:
 const empty = () => ({ kz: '', ru: '', en: '', zh: '' });
 
 interface Draft extends Omit<Dish, 'price' | 'size'> { price: string; size: string }
-interface Props { item: Dish | null; cats: Category[]; onBack: () => void; onSave: (d: Dish) => void; onDelete: (id: string) => void }
+interface Props { item: Dish | null; cats: Category[]; onBack: () => void; onSave: (d: Dish) => void; onDelete: (id: string) => void; onError: (msg: string) => void }
 
-export function DishEdit({ item, cats, onBack, onSave, onDelete }: Props) {
+export function DishEdit({ item, cats, onBack, onSave, onDelete, onError }: Props) {
   const isNew = !item;
   const [d, setD] = useState<Draft>(() => item
     ? { ...structuredClone(item), price: String(item.price || ''), size: item.size ? String(item.size) : '' }
@@ -27,6 +28,12 @@ export function DishEdit({ item, cats, onBack, onSave, onDelete }: Props) {
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
   const [confirm, setConfirm] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const onCropped = async (img: string) => {
+    setPending(null); setUploading(true);
+    try { set('img', await uploadImage(img)); } catch { onError('Сурет жүктелмеді. Қайталап көріңіз'); }
+    finally { setUploading(false); }
+  };
   const camRef = useRef<HTMLInputElement>(null);
   const galRef = useRef<HTMLInputElement>(null);
 
@@ -51,7 +58,7 @@ export function DishEdit({ item, cats, onBack, onSave, onDelete }: Props) {
     setBusy(false);
   };
   const toDish = (x: Draft): Dish => ({ ...x, price: Number(x.price) || 0, size: Number(x.size) || undefined, trans: status });
-  const ok = !!d.name.kz.trim() && !!d.cat;
+  const ok = !!d.name.kz.trim() && !!d.cat && !uploading;
   const save = () => { if (ok) onSave(toDish(d)); };
   const L = lang.toUpperCase();
 
@@ -60,7 +67,7 @@ export function DishEdit({ item, cats, onBack, onSave, onDelete }: Props) {
       <AppBar center title={isNew ? 'Жаңа тағам' : d.name.kz} onBack={onBack} style={{ background: 'var(--surface-card)', borderBottom: '1px solid var(--border-subtle)' }} />
       <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', aspectRatio: '4/3', position: 'relative', flexShrink: 0, background: 'var(--surface-card)', border: d.img ? 0 : '2px dashed var(--border-strong)' }}>
-          {d.img ? <img src={asset(d.img)} alt="" style={IMG} /> : (
+          {uploading ? <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, font: '600 16px var(--font-sans)', color: 'var(--text-muted)' }}><Icon name="loader" size={22} />Жүктелуде…</div> : d.img ? <img src={asset(d.img)} alt="" style={IMG} /> : (
             <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
               <Icon name="image-plus" size={32} style={{ color: 'var(--ink-400)' }} />
               <div style={{ font: '600 16px var(--font-sans)' }}>Тағам суреті</div>
@@ -69,7 +76,7 @@ export function DishEdit({ item, cats, onBack, onSave, onDelete }: Props) {
           )}
           <input ref={camRef} type="file" accept="image/*" capture="environment" hidden onChange={onFile} />
           <input ref={galRef} type="file" accept="image/*" hidden onChange={onFile} />
-          {d.img && <button onClick={() => galRef.current?.click()} className="qm-btn qm-btn--secondary" style={{ position: 'absolute', right: 10, bottom: 10, background: 'var(--surface-overlay)' }}><Icon name="camera" size={18} />Ауыстыру</button>}
+          {d.img && !uploading && <button onClick={() => galRef.current?.click()} className="qm-btn qm-btn--secondary" style={{ position: 'absolute', right: 10, bottom: 10, background: 'var(--surface-overlay)' }}><Icon name="camera" size={18} />Ауыстыру</button>}
         </div>
 
         <div className="qm-group" style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -116,7 +123,7 @@ export function DishEdit({ item, cats, onBack, onSave, onDelete }: Props) {
           {!isNew && <Button variant="ghost" block onClick={() => setConfirm(true)} style={{ color: 'var(--danger)' }}>Тағамды жою</Button>}
         </div>
       </div>
-      {pending && <CropOverlay src={pending} onCancel={() => { setPending(null); galRef.current?.click(); }} onDone={img => { set('img', img); setPending(null); }} />}
+      {pending && <CropOverlay src={pending} onCancel={() => { setPending(null); galRef.current?.click(); }} onDone={onCropped} />}
       <Dialog open={confirm} onClose={() => setConfirm(false)} title={'«' + d.name.kz + '» жойылсын ба?'}
         actions={<>
           <Button variant="danger" size="lg" block onClick={() => onDelete(d.id)}>Жою</Button>

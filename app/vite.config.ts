@@ -6,6 +6,8 @@ import { resolve } from 'node:path';
 export default defineConfig({
   base: './',
   plugins: [react()],
+  // `npm run dev` serves the UI; /api calls go to `npm run dev:api` (Cloudflare Functions on :8788).
+  server: { proxy: { '/api': 'http://localhost:8788' } },
   build: {
     rollupOptions: {
       input: {

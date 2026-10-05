@@ -36,7 +36,7 @@ export interface Dish {
   trans?: Record<Lang, TransStatus>;
 }
 
-export interface MenuData { cafe: Cafe; cats: Category[]; items: Dish[] }
+export interface MenuData { cafe: Cafe; cats: Category[]; items: Dish[]; accent: Accent }
 
 /** HTML lang attribute for a content language ("zh" switches the CJK type tokens). */
 export const htmlLang = (l: Lang) => (l === 'kz' ? 'kk' : l);
