@@ -1,4 +1,4 @@
-import type { CSSProperties, ButtonHTMLAttributes, ReactNode } from 'react';
+import type { CSSProperties, ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react';
 import { Icon, Price } from './core';
 import { Switch } from './forms';
 import { PhotoPlaceholder } from './menu';
@@ -41,11 +41,11 @@ export function Fab({ icon = 'plus', children, style, ...rest }: { icon?: string
   return <button type="button" className="qm-fab" style={style} {...rest}><Icon name={icon} size={24} />{children}</button>;
 }
 
-export interface MenuRowProps { name: string; price: number; photo?: string; available?: boolean; onToggle?: (v: boolean) => void; onClick?: () => void; draggable?: boolean; soldOutLabel?: string; availableLabel?: string }
-export function MenuRow({ name, price, photo, available = true, onToggle, onClick, draggable = true, soldOutLabel = 'Таусылды', availableLabel = 'Қолжетімді' }: MenuRowProps) {
+export interface MenuRowProps { name: string; price: number; photo?: string; available?: boolean; onToggle?: (v: boolean) => void; onClick?: () => void; draggable?: boolean; soldOutLabel?: string; availableLabel?: string; /** Spread onto the grip (e.g. pointer handlers from a sortable hook). */ handleProps?: HTMLAttributes<HTMLSpanElement> }
+export function MenuRow({ name, price, photo, available = true, onToggle, onClick, draggable = true, soldOutLabel = 'Таусылды', availableLabel = 'Қолжетімді', handleProps }: MenuRowProps) {
   return (
     <div className={'qm-row' + (available ? '' : ' qm-row--soldout')}>
-      {draggable ? <span className="qm-row__handle" aria-label="Сүйреу"><Icon name="grip-vertical" size={20} /></span> : <span style={{ width: 12 }} />}
+      {draggable ? <span className="qm-row__handle" aria-label="Сүйреу" {...handleProps}><Icon name="grip-vertical" size={20} /></span> : <span style={{ width: 12 }} />}
       <span className="qm-row__thumb">{photo ? <img src={photo} alt="" loading="lazy" /> : <PhotoPlaceholder iconSize={18} />}</span>
       <button type="button" className="qm-row__main" onClick={onClick}>
         <span className="qm-row__name">{name}</span>

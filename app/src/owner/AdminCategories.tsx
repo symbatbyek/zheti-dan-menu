@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AppBar, Button, Dialog, Icon, ListGroup, RadioList, TextField } from '../ds';
 import { translateText } from '../shared/translate';
 import { LANGS, htmlLang, type Category, type Dish, type Lang } from '../shared/types';
+import { useSortable } from './useSortable';
 
 const LANG_LABEL: Record<Lang, string> = { kz: 'Қазақша', ru: 'Русский', en: 'English', zh: '中文' };
 
@@ -40,7 +41,6 @@ export function AdminCategories({ cats, setCats, items, setItems }: Props) {
   const [edit, setEdit] = useState<{ cat: Category; isNew: boolean } | null>(null);
   const [del, setDel] = useState<Category | null>(null);
   const [moveTo, setMoveTo] = useState('');
-  const [drag, setDrag] = useState<string | null>(null);
   const count = (id: string) => items.filter(i => i.cat === id).length;
   const others = del ? cats.filter(c => c.id !== del.id) : [];
   const n = del ? count(del.id) : 0;
@@ -51,10 +51,10 @@ export function AdminCategories({ cats, setCats, items, setItems }: Props) {
     setCats(cats.filter(c => c.id !== del.id)); setDel(null); setEdit(null);
   };
   const save = (c: Category) => { setCats(cats.some(x => x.id === c.id) ? cats.map(x => (x.id === c.id ? c : x)) : [...cats, c]); setEdit(null); };
-  const drop = (target: string) => {
-    if (drag && drag !== target) { const nx = cats.slice(); const a = nx.findIndex(c => c.id === drag), b = nx.findIndex(c => c.id === target); const [m] = nx.splice(a, 1); nx.splice(b, 0, m); setCats(nx); }
-    setDrag(null);
-  };
+  const sort = useSortable(cats.map(c => c.id), (dragId, overId) => {
+    const nx = cats.slice(); const a = nx.findIndex(c => c.id === dragId), b = nx.findIndex(c => c.id === overId);
+    const [m] = nx.splice(a, 1); nx.splice(b, 0, m); setCats(nx);
+  });
   return (
     <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
       <div style={{ padding: '16px 16px 4px' }}>
@@ -65,8 +65,8 @@ export function AdminCategories({ cats, setCats, items, setItems }: Props) {
         {cats.length > 0 && (
           <ListGroup>
             {cats.map(c => (
-              <div key={c.id} draggable onDragStart={() => setDrag(c.id)} onDragOver={e => e.preventDefault()} onDrop={() => drop(c.id)} onDragEnd={() => setDrag(null)} style={{ display: 'flex', alignItems: 'center', gap: 6, minHeight: 68, padding: '6px 12px 6px 0', opacity: drag === c.id ? 0.5 : 1 }}>
-                <span className="qm-row__handle"><Icon name="grip-vertical" size={20} /></span>
+              <div key={c.id} ref={sort.rowRef(c.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, minHeight: 68, padding: '6px 12px 6px 0', ...sort.rowStyle(c.id) }}>
+                <span className="qm-row__handle" {...sort.handleProps(c.id)}><Icon name="grip-vertical" size={20} /></span>
                 <button onClick={() => setEdit({ cat: { ...c }, isNew: false })} style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left', border: 0, background: 'none', padding: 0, cursor: 'pointer', color: 'inherit' }}>
                   <span style={{ flex: 1, minWidth: 0, display: 'block', font: '600 16px/1.3 var(--font-sans)' }}>{c.kz}</span>
                   <span style={{ font: '500 15px var(--font-sans)', color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums' }}>{count(c.id)}</span>

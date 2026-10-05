@@ -2,21 +2,21 @@ import { useState } from 'react';
 import { Button, EmptyState, Fab, ListGroup, MenuRow, SectionHeader, TextField } from '../ds';
 import { asset } from '../shared/store';
 import type { Dish, MenuData } from '../shared/types';
+import { useSortable } from './useSortable';
 
 interface Props { data: MenuData; setItems: (i: Dish[]) => void; onEdit: (d: Dish) => void; onAdd: () => void; onPreview: () => void }
 
 export function AdminMenu({ data, setItems, onEdit, onAdd, onPreview }: Props) {
   const { cafe, cats, items } = data;
   const [q, setQ] = useState('');
-  const [drag, setDrag] = useState<string | null>(null);
   const toggle = (id: string, v: boolean) => setItems(items.map(i => (i.id === id ? { ...i, soldOut: !v } : i)));
-  const drop = (target: Dish) => {
-    if (drag && drag !== target.id) {
-      const a = items.findIndex(x => x.id === drag), b = items.findIndex(x => x.id === target.id);
-      if (items[a].cat === items[b].cat) { const nx = items.slice(); const [m] = nx.splice(a, 1); nx.splice(b, 0, m); setItems(nx); }
-    }
-    setDrag(null);
+  // Dishes reorder only within their own category.
+  const move = (dragId: string, overId: string) => {
+    const a = items.findIndex(x => x.id === dragId), b = items.findIndex(x => x.id === overId);
+    if (a < 0 || b < 0 || items[a].cat !== items[b].cat) return;
+    const nx = items.slice(); const [m] = nx.splice(a, 1); nx.splice(b, 0, m); setItems(nx);
   };
+  const sort = useSortable(items.map(i => i.id), move);
   const match = (i: Dish) => !q || (i.name.kz + ' ' + i.name.ru).toLowerCase().includes(q.toLowerCase());
   return (
     <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
@@ -41,8 +41,8 @@ export function AdminMenu({ data, setItems, onEdit, onAdd, onPreview }: Props) {
                 <SectionHeader count={all.length + ' тағам' + (off ? ' · ' + off + ' таусылды' : '')}>{c.kz}</SectionHeader>
                 <ListGroup>
                   {list.map(i => (
-                    <div key={i.id} draggable onDragStart={() => setDrag(i.id)} onDragOver={e => e.preventDefault()} onDrop={() => drop(i)} onDragEnd={() => setDrag(null)} style={{ opacity: drag === i.id ? 0.5 : 1 }}>
-                      <MenuRow name={i.name.kz} price={i.price} photo={asset(i.img)} available={!i.soldOut} onToggle={v => toggle(i.id, v)} onClick={() => onEdit(i)} />
+                    <div key={i.id} ref={sort.rowRef(i.id)} style={sort.rowStyle(i.id)}>
+                      <MenuRow handleProps={sort.handleProps(i.id)} draggable={!q} name={i.name.kz} price={i.price} photo={asset(i.img)} available={!i.soldOut} onToggle={v => toggle(i.id, v)} onClick={() => onEdit(i)} />
                     </div>
                   ))}
                 </ListGroup>
